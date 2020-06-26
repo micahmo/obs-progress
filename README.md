@@ -8,5 +8,5 @@ Here it is pinned above the Scene Transitions and Controls docks. The title of t
 
 # Issues
 
-* Currently, OBS cannot remember the dock position of plugins, because docks are added at each startup.
+* ~~Currently, OBS cannot remember the dock position of plugins, because docks are added at each startup.~~ Fixed in [b908e60](https://github.com/micahmo/obs-progress/commit/b908e60f4300083ed6bc5c06f383ca94f23daedd).
 * obs-progress plugin ocasionally causes crash on shutdown. Exception comes from Qt code.
