@@ -11,6 +11,8 @@
 #include <date/date.h>
 #include <QLabel>
 
+using namespace std::chrono;
+
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE("obs-progress", "en-US")
 
@@ -110,9 +112,9 @@ void timerHit()
 				auto duration = obs_source_media_get_duration(currentSceneItemSource);
 
 				// Convert the times to a date format
-				auto timeTimePoint = std::chrono::floor<std::chrono::seconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::time_point(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::milliseconds(time)))));
-				auto durationTimePoint = std::chrono::floor<std::chrono::seconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::time_point(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::milliseconds(duration)))));
-				auto remainingTimePoint = std::chrono::ceil<std::chrono::seconds>(std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::time_point(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::milliseconds(duration - time)))));
+				auto timeTimePoint = floor<seconds>(time_point_cast<milliseconds>(system_clock::time_point(duration_cast<milliseconds>(milliseconds(time)))));
+				auto durationTimePoint = floor<seconds>(time_point_cast<milliseconds>(system_clock::time_point(duration_cast<milliseconds>(milliseconds(duration)))));
+				auto remainingTimePoint = ceil<seconds>(time_point_cast<milliseconds>(system_clock::time_point(duration_cast<milliseconds>(milliseconds(duration - time)))));
 				QString progressBarText = progressBarTitleFormat.arg(obs_source_get_name(currentSceneItemSource), 
 					date::format("%T", timeTimePoint).c_str(), 
 					date::format("%T", durationTimePoint).c_str(),
