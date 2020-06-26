@@ -5,6 +5,7 @@
 ProgressDockWidget::ProgressDockWidget(QWidget* parent) 
 	: QDockWidget(parent)
 {
+	setObjectName("ProgressDockWidget");
 	setWindowTitle("Media Progress");
 	setFloating(false);
 
