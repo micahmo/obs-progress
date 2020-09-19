@@ -38,11 +38,9 @@ void obs_module_unload(void)
 
 bool obs_module_load(void)
 {
-	Initialize();
+	_sources = QMap<obs_source_t*, QProgressBar*>();
 
-	//QAction* menuAction = (QAction*)obs_frontend_add_tools_menu_qaction("I am a jelly donut.");
-	
-	QMainWindow* mainWindow = (QMainWindow*)obs_frontend_get_main_window();
+	QMainWindow* mainWindow = static_cast<QMainWindow*>(obs_frontend_get_main_window());
 	_progressDockWidget = new ProgressDockWidget(mainWindow);
 	obs_frontend_add_dock(_progressDockWidget);
 
@@ -55,28 +53,14 @@ bool obs_module_load(void)
 			updateSceneInfo();
 		}
 	};
-	obs_frontend_add_event_callback(eventCallback, (void*)(obs_frontend_event_cb)eventCallback);
+	obs_frontend_add_event_callback(eventCallback, static_cast<void*>(static_cast<obs_frontend_event_cb>(eventCallback)));
 
 	return true;
 }
 
-void Initialize()
-{
-	media_states[OBS_MEDIA_STATE_NONE] = "none";
-	media_states[OBS_MEDIA_STATE_PLAYING] = "playing";
-	media_states[OBS_MEDIA_STATE_OPENING] = "opening";
-	media_states[OBS_MEDIA_STATE_BUFFERING] = "buffering";
-	media_states[OBS_MEDIA_STATE_PAUSED] = "paused";
-	media_states[OBS_MEDIA_STATE_STOPPED] = "stopped";
-	media_states[OBS_MEDIA_STATE_ENDED] = "ended";
-	media_states[OBS_MEDIA_STATE_ERROR] = "error";
-
-	_sources = QMap<obs_source_t*, QProgressBar*>();
-}
-
 void startTimer()
 {
-	QMainWindow* mainWindow = (QMainWindow*)obs_frontend_get_main_window();
+	QMainWindow* mainWindow = static_cast<QMainWindow*>(obs_frontend_get_main_window());
 	_timer = new QTimer(mainWindow);
 	QObject::connect(_timer, &QTimer::timeout, timerHit);
 	_timer->start(500);
@@ -142,7 +126,7 @@ void updateSceneInfo()
 	try
 	{
 		obs_source_t* currentSceneSource = obs_frontend_get_current_scene(); // This is the only call that increments the count, so we have to release it
-		auto* name = obs_source_get_name(currentSceneSource);
+		const char* name = obs_source_get_name(currentSceneSource);
 
 		obs_scene_t* currentScene = obs_scene_from_source(currentSceneSource);
 		obs_source_release(currentSceneSource);
@@ -153,7 +137,7 @@ void updateSceneInfo()
 
 			if (obs_source_media_get_duration(currentSceneItemSource) > 0)
 			{
-				QString progressBarTitle = progressBarTitleFormat.arg(obs_source_get_name(currentSceneItemSource)); 
+				const QString progressBarTitle = progressBarTitleFormat.arg(obs_source_get_name(currentSceneItemSource)); 
 				_sources[currentSceneItemSource] = _progressDockWidget->addProgress(progressBarTitle);
 			}
 
@@ -162,7 +146,7 @@ void updateSceneInfo()
 
 		_sources.clear();
 		_progressDockWidget->clearProgressBars();
-		obs_scene_enum_items(currentScene, sceneItemsCallback, (void*)(scene_items_callback)sceneItemsCallback);
+		obs_scene_enum_items(currentScene, sceneItemsCallback, static_cast<void*>(static_cast<scene_items_callback>(sceneItemsCallback)));
 
 		_progressDockWidget->setWindowTitle("Progress of '" + QString(name) + "'");
 	}

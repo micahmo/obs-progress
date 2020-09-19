@@ -1,5 +1,4 @@
 #include <QStatusBar>
-#include <QLabel>
 #include "ProgressDockWidget.h"
 
 ProgressDockWidget::ProgressDockWidget(QWidget* parent) 
@@ -17,14 +16,14 @@ ProgressDockWidget::ProgressDockWidget(QWidget* parent)
 	setWidget(container);
 }
 
-QProgressBar* ProgressDockWidget::addProgress(QString text)
+QProgressBar* ProgressDockWidget::addProgress(QString text) const
 {
 	return layout->addProgressBar(text);
 }
 
-void ProgressDockWidget::clearProgressBars()
+void ProgressDockWidget::clearProgressBars() const
 {
-	for (auto widget : container->findChildren<QWidget*>(QString{}, Qt::FindDirectChildrenOnly))
+	for (QWidget* widget : container->findChildren<QWidget*>(QString{}, Qt::FindDirectChildrenOnly))
 	{
 		delete widget;
 	}

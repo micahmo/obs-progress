@@ -46,7 +46,7 @@ QLabel* ProgressContainerLayout::getLabel(QProgressBar* progressBar)
 		{
 			if (typeid(*widget) == typeid(QLabel))
 			{
-				return (QLabel*)widget;
+				return dynamic_cast<QLabel*>(widget);
 			}
 		}
 	}
