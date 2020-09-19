@@ -27,6 +27,7 @@ void updateSceneInfo();
 
 QTimer* _timer;
 QMap<obs_source_t*, ProgressSlider*> _sources;
+obs_source_t* _currentSceneSource;
 
 QString progressBarTitleFormat = "'%1' Source   %2 / %3 / -%4";
 
@@ -71,14 +72,9 @@ void startTimer()
 
 void stopTimer()
 {
-	try
-	{
-		//_timer->stop();
-	}
-	catch (...)
-	{
-		// Empty
-	}
+	_timer->stop();
+	_sources.clear();
+	obs_source_release(_currentSceneSource);
 }
 
 void timerHit()
@@ -153,12 +149,19 @@ void updateSceneInfo()
 {
 	try
 	{
-		obs_source_t* currentSceneSource = obs_frontend_get_current_scene(); // This is the only call that increments the count, so we have to release it
-		const char* name = obs_source_get_name(currentSceneSource);
+		// Clean up the previous source/scenes
+		_sources.clear();
+		obs_source_release(_currentSceneSource);
+		_progressDockWidget->clearProgressBars();
 
-		obs_scene_t* currentScene = obs_scene_from_source(currentSceneSource);
-		obs_source_release(currentSceneSource);
+		// Retrieve the current scene
+		_currentSceneSource = obs_frontend_get_current_scene(); // This is the only call that increments the count, so we have to release it
+		const char* name = obs_source_get_name(_currentSceneSource);
 
+		obs_scene_t* currentScene = obs_scene_from_source(_currentSceneSource);
+		obs_source_release(_currentSceneSource);
+
+		// Iterate through the sources in the current scene and add progress bars for each
 		auto sceneItemsCallback = [](obs_scene_t* currentScene, obs_sceneitem_t* currentSceneItem, void* param)
 		{
 			obs_source_t* currentSceneItemSource = obs_sceneitem_get_source(currentSceneItem);
@@ -179,8 +182,6 @@ void updateSceneInfo()
 			return true;
 		};
 
-		_sources.clear();
-		_progressDockWidget->clearProgressBars();
 		obs_scene_enum_items(currentScene, sceneItemsCallback, static_cast<void*>(static_cast<scene_items_callback>(sceneItemsCallback)));
 
 		_progressDockWidget->setWindowTitle("Progress of '" + QString(name) + "'");
