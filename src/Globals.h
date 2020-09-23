@@ -7,4 +7,5 @@ public:
 	static QIcon pauseIcon;
 	static QIcon playIcon;
 	static QIcon stopIcon;
+	static QIcon loopIcon;
 };

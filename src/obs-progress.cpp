@@ -122,6 +122,20 @@ void timerHit()
 					QPushButton* playPauseButton = _progressDockWidget->layout->getPlayPauseButton(i.value());
 					playPauseButton->setIcon(Globals::playIcon);
 				}
+				else if (state == OBS_MEDIA_STATE_PLAYING)
+				{
+					// Sometimes the playback can start automatically (e.g., when settings are updated)
+					// so we need to handle this case and update the play/pause button
+					QPushButton* playPauseButton = _progressDockWidget->layout->getPlayPauseButton(i.value());
+					playPauseButton->setIcon(Globals::pauseIcon);
+				}
+
+				// Lastly, make sure the LoopToggle button is in the right state
+				obs_data_t* settings = obs_source_get_settings(currentSceneItemSource);
+				const bool loop = obs_data_get_bool(settings, "looping");
+				obs_data_release(settings);
+				QPushButton* loopToggleButton = _progressDockWidget->layout->getLoopToggleButton(i.value());
+				loopToggleButton->setChecked(loop);
 			}
 		}
 	}

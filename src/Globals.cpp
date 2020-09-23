@@ -4,6 +4,7 @@
 QIcon Globals::pauseIcon;
 QIcon Globals::playIcon;
 QIcon Globals::stopIcon;
+QIcon Globals::loopIcon;
 
 void Globals::initialize()
 {
@@ -27,4 +28,11 @@ void Globals::initialize()
 	stopImagePainter.fillRect(stopImage.rect(), Qt::gray);
 	stopImagePainter.end();
 	Globals::stopIcon = QIcon(stopImage);
+
+	QPixmap loopImage(":/qt-project.org/styles/commonstyle/images/refresh-24.png");
+	QPainter loopImagePainter(&loopImage);
+	loopImagePainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+	loopImagePainter.fillRect(loopImage.rect(), Qt::lightGray);
+	loopImagePainter.end();
+	Globals::loopIcon = QIcon(loopImage);
 }

@@ -18,9 +18,11 @@ public:
 	std::vector<QWidget*> getWidget(QProgressBar*);
 	QLabel* getLabel(QProgressBar*);
 	QPushButton* getPlayPauseButton(QProgressBar*);
+	QPushButton* getLoopToggleButton(QProgressBar*);
 
 private:
 	QMap<QProgressBar*, std::vector<QWidget*>> widgets;
 	QPushButton* addPlayPauseButton(QHBoxLayout*, obs_source_t*);
 	QPushButton* addStopButton(QHBoxLayout*, obs_source_t*);
+	QPushButton* addLoopToggleButton(QHBoxLayout*, obs_source_t*);
 };

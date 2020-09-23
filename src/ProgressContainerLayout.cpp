@@ -29,11 +29,13 @@ QProgressBar* ProgressContainerLayout::addProgressBar(obs_source_t* source)
 	insertWidget(count() - 1, mediaControls);
 
 	QPushButton* playPauseButton = addPlayPauseButton(mediaControlsLayout, source);	
-	QPushButton* stopButton = addStopButton(mediaControlsLayout, source);
+	addStopButton(mediaControlsLayout, source);
 
 	mediaControlsLayout->addWidget(statusBar);
 
-	widgets[progressBar] = { label, playPauseButton };
+	QPushButton* loopToggleButton = addLoopToggleButton(mediaControlsLayout, source);
+
+	widgets[progressBar] = { label, playPauseButton, loopToggleButton };
 
 	return progressBar;
 }
@@ -92,6 +94,36 @@ QPushButton* ProgressContainerLayout::addStopButton(QHBoxLayout* layout, obs_sou
 	return stopButton;
 }
 
+QPushButton* ProgressContainerLayout::addLoopToggleButton(QHBoxLayout* layout, obs_source_t* source)
+{
+	QPushButton* loopToggleButton = new QPushButton();
+	loopToggleButton->setObjectName("LoopToggleButton");
+	loopToggleButton->setIcon(Globals::loopIcon);
+	loopToggleButton->setToolTip("Toggle loop");
+	loopToggleButton->setCheckable(true);
+	loopToggleButton->setMaximumWidth(25);
+
+	obs_data_t* initialSettings = obs_source_get_settings(source); // Must release
+	const bool initialLoop = obs_data_get_bool(initialSettings, "looping");
+	obs_data_release(initialSettings);
+	
+	loopToggleButton->setChecked(initialLoop);
+	
+	connect(loopToggleButton, &QPushButton::clicked, [=]()
+	{
+		obs_data_t* settings = obs_source_get_settings(source);
+		obs_data_set_bool(settings, "looping", loopToggleButton->isChecked());
+
+		// Important: Must persist the settings back to the source
+		obs_source_update(source, settings);
+
+		obs_data_release(settings);
+	});
+
+	layout->addWidget(loopToggleButton);
+	return loopToggleButton;
+}
+
 std::vector<QWidget*> ProgressContainerLayout::getWidget(QProgressBar* progressBar)
 {
 	if (widgets.contains(progressBar))
@@ -139,6 +171,27 @@ QPushButton* ProgressContainerLayout::getPlayPauseButton(QProgressBar* progressB
 
 	return new QPushButton();
 }
+
+QPushButton* ProgressContainerLayout::getLoopToggleButton(QProgressBar* progressBar)
+{
+	if (widgets.contains(progressBar))
+	{
+		for (auto& widget : widgets[progressBar])
+		{
+			if (typeid(*widget) == typeid(QPushButton))
+			{
+				QPushButton* button = dynamic_cast<QPushButton*>(widget);
+				if (button->objectName() == "LoopToggleButton")
+				{
+					return button;
+				}
+			}
+		}
+	}
+
+	return new QPushButton();
+}
+
 
 ProgressContainerLayout::~ProgressContainerLayout()
 {
