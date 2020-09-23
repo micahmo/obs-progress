@@ -1,21 +1,26 @@
 #pragma once
 
-#include <QVboxLayout>
+#include <obs.h>
+#include <QHboxLayout>
 #include <QProgressBar>
 #include <QLabel>
 #include <qmap.h>
+#include <QPushButton>
 
 class ProgressContainerLayout : public QVBoxLayout
 {
 	Q_OBJECT
 
 public:
-	explicit ProgressContainerLayout(QWidget* parent = 0);
+	explicit ProgressContainerLayout(QWidget* = 0);
 	~ProgressContainerLayout();
-	QProgressBar* addProgressBar(QString text = "");
-	std::vector<QWidget*> getWidget(QProgressBar* progressBar);
-	QLabel* getLabel(QProgressBar* progressBar);
+	QProgressBar* addProgressBar(obs_source_t*);
+	std::vector<QWidget*> getWidget(QProgressBar*);
+	QLabel* getLabel(QProgressBar*);
+	QPushButton* getPlayPauseButton(QProgressBar*);
 
 private:
 	QMap<QProgressBar*, std::vector<QWidget*>> widgets;
+	QPushButton* addPlayPauseButton(QHBoxLayout*, obs_source_t*);
+	QPushButton* addStopButton(QHBoxLayout*, obs_source_t*);
 };

@@ -10,6 +10,7 @@
 #include <chrono>
 #include <date/date.h>
 #include <QLabel>
+#include "Globals.h"
 
 using namespace std::chrono;
 
@@ -18,7 +19,6 @@ OBS_MODULE_USE_DEFAULT_LOCALE("obs-progress", "en-US")
 
 ProgressDockWidget* _progressDockWidget;
 std::map<obs_media_state, QString> media_states;
-void Initialize();
 void startTimer();
 void stopTimer();
 void timerHit();
@@ -38,6 +38,8 @@ void obs_module_unload(void)
 
 bool obs_module_load(void)
 {
+	Globals::initialize();
+	
 	_sources = QMap<obs_source_t*, QProgressBar*>();
 
 	QMainWindow* mainWindow = static_cast<QMainWindow*>(obs_frontend_get_main_window());
@@ -100,7 +102,7 @@ void timerHit()
 				auto durationTimePoint = floor<seconds>(time_point_cast<milliseconds>(system_clock::time_point(duration_cast<milliseconds>(milliseconds(duration)))));
 				auto remainingTimePoint = ceil<seconds>(time_point_cast<milliseconds>(system_clock::time_point(duration_cast<milliseconds>(milliseconds(duration - time)))));
 				QString progressBarText = progressBarTitleFormat.arg(obs_source_get_name(currentSceneItemSource), 
-					date::format("%T", timeTimePoint).c_str(), 
+					date::format("%T", timeTimePoint).c_str(),
 					date::format("%T", durationTimePoint).c_str(),
 					date::format("%T", remainingTimePoint).c_str()
 				);
@@ -112,6 +114,14 @@ void timerHit()
 				// Set the times on the 
 				i.value()->setRange(0, duration);
 				i.value()->setValue(time);
+
+				// Get the state of the source and see if it's ended
+				obs_media_state state = obs_source_media_get_state(currentSceneItemSource);
+				if (state == OBS_MEDIA_STATE_ENDED)
+				{
+					QPushButton* playPauseButton = _progressDockWidget->layout->getPlayPauseButton(i.value());
+					playPauseButton->setIcon(Globals::playIcon);
+				}
 			}
 		}
 	}
@@ -137,8 +147,7 @@ void updateSceneInfo()
 
 			if (obs_source_media_get_duration(currentSceneItemSource) > 0)
 			{
-				const QString progressBarTitle = progressBarTitleFormat.arg(obs_source_get_name(currentSceneItemSource)); 
-				_sources[currentSceneItemSource] = _progressDockWidget->addProgress(progressBarTitle);
+				_sources[currentSceneItemSource] = _progressDockWidget->addProgress(currentSceneItemSource);
 			}
 
 			return true;

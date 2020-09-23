@@ -2,8 +2,6 @@
 
 #include <QDockWidget>
 #include <QWidget>
-#include <QProgressBar>
-#include <QVboxLayout>
 #include "ProgressContainerLayout.h"
 
 class ProgressDockWidget : public QDockWidget
@@ -13,7 +11,7 @@ class ProgressDockWidget : public QDockWidget
 public:
 	explicit ProgressDockWidget(QWidget* parent = 0);
 	~ProgressDockWidget();
-	QProgressBar* addProgress(QString text = "") const;
+	QProgressBar* addProgress(obs_source_t*) const;
 	void clearProgressBars() const;
 
 	ProgressContainerLayout* layout;

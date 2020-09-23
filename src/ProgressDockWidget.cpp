@@ -16,9 +16,9 @@ ProgressDockWidget::ProgressDockWidget(QWidget* parent)
 	setWidget(container);
 }
 
-QProgressBar* ProgressDockWidget::addProgress(QString text) const
+QProgressBar* ProgressDockWidget::addProgress(obs_source_t* source) const
 {
-	return layout->addProgressBar(text);
+	return layout->addProgressBar(source);
 }
 
 void ProgressDockWidget::clearProgressBars() const

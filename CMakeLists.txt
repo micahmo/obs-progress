@@ -18,11 +18,13 @@ set(obs-progress_SOURCES
 	src/obs-progress.cpp
 	src/ProgressDockWidget.cpp
 	src/ProgressContainerLayout.cpp
+	src/Globals.cpp
 	)
 	  
 set(obs-progress_HEADERS
 	src/ProgressDockWidget.h
 	src/ProgressContainerLayout.h
+	src/Globals.h
 	)
 
 add_library(obs-progress MODULE
