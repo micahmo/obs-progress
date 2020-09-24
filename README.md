@@ -1,10 +1,25 @@
 ﻿# obs-progress
 
-A plugin for OBS Studio that shows progress of all media files in the active scene, including audio and video. A progress bar, along with elapsed time, total time, and remaining time, is shown for each media source. Progress is displayed in a standard OBS dock that can be floated, pinned, hidden, etc.
+A plugin for OBS Studio that provides playback controls and progress indicators for media and slideshow sources. The controls are available in a standard OBS dock that can be floated, pinned, hidden, etc.
 
-![screenshot](https://i.imgur.com/aKYiKww.png)
+![screenshot](https://i.imgur.com/mNC34hI.png)
 
-Here it is pinned above the Scene Transitions and Controls docks. The title of the dock displays the scene name, while the text above the prgress bar(s) show the source name.
+The following media indicators and controls are shown for all applicable sources in the active scene.
+- Media
+  - Play/pause/stop
+  - Toggle loop option
+  - Click progress bar or click and drag playhead to seek through media
+  - Elapsed/total/remaining time
+- Slideshows
+  - Next/previous/restart
+
+![screenshot](https://i.imgur.com/63dfJZY.png)
+
+Here are the controls pinned to the UI. The title of the dock displays the scene name and the text above the controls shows the source name. In this case, there are two media sources in the scene, one of which is set to loop, and the other of which is not currently playing.
+
+![screenshot](https://i.imgur.com/fTap8dI.png)
+
+Here are the controls when the active scene has a slideshow source and a media source.
 
 # How to Use
 
