@@ -13,7 +13,7 @@ The following media indicators and controls are shown for all applicable sources
 - Slideshows
   - Next/previous/restart
 
-![screenshot](https://i.imgur.com/OYB08ib.png)
+![screenshot](https://i.imgur.com/y1iwCVY.png)
 
 Here are the controls pinned to the UI. The title of the dock displays the scene name and the text above the controls shows the source name. In this case, the active scene contains a slideshow and a media source.
 
