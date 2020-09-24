@@ -23,4 +23,15 @@ Download the latest version of [obs-progress.dll](https://github.com/micahmo/obs
 
 Place the file in OBS's 64-bit Plugins directory (for example, `C:\Program Files\obs-studio\obs-plugins\64bit`).
 
-Start OBS to use. The progress dock will initially appear undocked at the top-left. It can be repositioned manualy and its size/position/state will be restored from session to session.
+Start OBS to use. The progress dock will initially appear undocked at the top-left. It can be repositioned manually and its size/position/state will be restored from session to session.
+
+# FAQ
+
+#### OBS is adding Media Controls to [OBS Studio 26.0](https://obsproject.com/forum/threads/obs-studio-26-0-release-candidate.129075/). Why is an additional plugin needed?
+The built-in media controls coming in OBS 26.0 are *very* limited. Namely, the controls are only shown for the currently selected source. This has several drawbacks.
+- You must manually select the source before seeing the media controls.
+- If there are multiple media sources in a given scene, you can't see the media controls for more than one at once.
+- If you are using Studio Mode, you will *never* see the media controls, because the Preview and Program windows will always be different, so the selected source will never be the active one.
+
+#### Why not use the existing [Media Controls](https://obsproject.com/forum/resources/media-controls.1032/) plugin?
+Please do! It is a great plugin with good support. In fact, the code was incorporated as the basis for the built-in media controls feature in 26.0.
