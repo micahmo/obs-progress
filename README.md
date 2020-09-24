@@ -2,7 +2,7 @@
 
 A plugin for OBS Studio that provides playback controls and progress indicators for media and slideshow sources. The controls are available in a standard OBS dock that can be floated, pinned, hidden, etc.
 
-![screenshot](https://i.imgur.com/mNC34hI.png)
+![screenshot](https://i.imgur.com/CTxWdmG.png)
 
 The following media indicators and controls are shown for all applicable sources in the active scene.
 - Media
@@ -13,13 +13,9 @@ The following media indicators and controls are shown for all applicable sources
 - Slideshows
   - Next/previous/restart
 
-![screenshot](https://i.imgur.com/63dfJZY.png)
+![screenshot](https://i.imgur.com/OYB08ib.png)
 
-Here are the controls pinned to the UI. The title of the dock displays the scene name and the text above the controls shows the source name. In this case, there are two media sources in the scene, one of which is set to loop, and the other of which is not currently playing.
-
-![screenshot](https://i.imgur.com/fTap8dI.png)
-
-Here are the controls when the active scene has a slideshow source and a media source.
+Here are the controls pinned to the UI. The title of the dock displays the scene name and the text above the controls shows the source name. In this case, the active scene contains a slideshow and a media source.
 
 # How to Use
 
