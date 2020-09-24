@@ -35,3 +35,6 @@ The built-in media controls coming in OBS 26.0 are *very* limited. Namely, the c
 
 #### Why not use the existing [Media Controls](https://obsproject.com/forum/resources/media-controls.1032/) plugin?
 Please do! It is a great plugin with good support. In fact, the code was incorporated as the basis for the built-in media controls feature in 26.0.
+
+# OBS Studio Issues
+I have experienced an issue with OBS Studio 25.0.8 where the slideshow butons are unable to control the slideshow source. This issue seems to be resolved in the [26.0-rc3 release](https://obsproject.com/forum/threads/obs-studio-26-0-release-candidate.129075/).
