@@ -12,6 +12,7 @@ public:
 	explicit ProgressDockWidget(QWidget* parent = 0);
 	~ProgressDockWidget();
 	ProgressSlider* addProgress(obs_source_t*) const;
+	ProgressSlider* addSlideshow(obs_source_t*) const;
 	void clearProgressBars() const;
 
 	ProgressContainerLayout* layout;

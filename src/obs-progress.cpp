@@ -162,10 +162,18 @@ void updateSceneInfo()
 		auto sceneItemsCallback = [](obs_scene_t* currentScene, obs_sceneitem_t* currentSceneItem, void* param)
 		{
 			obs_source_t* currentSceneItemSource = obs_sceneitem_get_source(currentSceneItem);
+			const char* id = obs_source_get_unversioned_id(currentSceneItemSource);
+			const bool isSlideshow = strcmp(id, "slideshow") == 0;
 
 			if (obs_source_media_get_duration(currentSceneItemSource) > 0)
 			{
+				// Media source
 				_sources[currentSceneItemSource] = _progressDockWidget->addProgress(currentSceneItemSource);
+			}
+			else if (isSlideshow)
+			{
+				// Slideshow source
+				_progressDockWidget->addSlideshow(currentSceneItemSource);
 			}
 
 			return true;

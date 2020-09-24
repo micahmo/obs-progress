@@ -8,4 +8,7 @@ public:
 	static QIcon playIcon;
 	static QIcon stopIcon;
 	static QIcon loopIcon;
+	static QIcon previousIcon;
+	static QIcon nextIcon;
+	static QIcon restartIcon;
 };

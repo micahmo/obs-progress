@@ -118,6 +118,75 @@ ProgressSlider* ProgressContainerLayout::addProgressBar(obs_source_t* source)
 	return progressBar;
 }
 
+ProgressSlider* ProgressContainerLayout::addSlideshow(obs_source_t* source)
+{
+	const char* name = obs_source_get_name(source);
+	
+	QLabel* label = new QLabel("'" + QString(name) + "' Slideshow Source");
+	insertWidget(count() - 1, label); // Insert above the last stretch
+
+	QHBoxLayout* mediaControlsLayout = new QHBoxLayout();
+	addRestartButton(mediaControlsLayout, source);
+	addPreviousButton(mediaControlsLayout, source);
+	addNextButton(mediaControlsLayout, source);
+	mediaControlsLayout->addStretch();
+
+	QWidget* mediaControls = new QWidget();
+	mediaControlsLayout->setContentsMargins(0, 0, 0, 10);
+	mediaControls->setLayout(mediaControlsLayout);
+	insertWidget(count() - 1, mediaControls);
+	
+	return nullptr;
+}
+
+QPushButton* ProgressContainerLayout::addRestartButton(QHBoxLayout* layout, obs_source_t* source)
+{
+	QPushButton* restartButton = new QPushButton();
+	restartButton->setMaximumWidth(25);
+	restartButton->setIcon(Globals::restartIcon);
+	restartButton->setToolTip("First slide");
+
+	connect(restartButton, &QPushButton::clicked, [=]()
+	{
+		obs_source_media_restart(source);
+	});
+
+	layout->addWidget(restartButton);
+	return restartButton;
+}
+
+QPushButton* ProgressContainerLayout::addPreviousButton(QHBoxLayout* layout, obs_source_t* source)
+{
+	QPushButton* previousButton = new QPushButton();
+	previousButton->setMaximumWidth(25);
+	previousButton->setIcon(Globals::previousIcon);
+	previousButton->setToolTip("Previous slide");
+
+	connect(previousButton, &QPushButton::clicked, [=]()
+	{
+		obs_source_media_previous(source);
+	});
+
+	layout->addWidget(previousButton);
+	return previousButton;
+}
+
+QPushButton* ProgressContainerLayout::addNextButton(QHBoxLayout* layout, obs_source_t* source)
+{
+	QPushButton* nextButton = new QPushButton();
+	nextButton->setMaximumWidth(25);
+	nextButton->setIcon(Globals::nextIcon);
+	nextButton->setToolTip("Next slide");
+
+	connect(nextButton, &QPushButton::clicked, [=]()
+	{
+		obs_source_media_next(source);
+	});
+
+	layout->addWidget(nextButton);
+	return nextButton;
+}
+
 QPushButton* ProgressContainerLayout::addPlayPauseButton(QHBoxLayout* layout, obs_source_t* source)
 {
 	QPushButton* playPauseButton = new QPushButton();

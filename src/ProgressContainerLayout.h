@@ -15,6 +15,7 @@ public:
 	explicit ProgressContainerLayout(QWidget* = 0);
 	~ProgressContainerLayout();
 	ProgressSlider* addProgressBar(obs_source_t*);
+	ProgressSlider* addSlideshow(obs_source_t*);
 	std::vector<QWidget*> getWidget(ProgressSlider*);
 	QLabel* getLabel(ProgressSlider*);
 	QPushButton* getPlayPauseButton(ProgressSlider*);
@@ -25,4 +26,7 @@ private:
 	QPushButton* addPlayPauseButton(QHBoxLayout*, obs_source_t*);
 	QPushButton* addStopButton(QHBoxLayout*, obs_source_t*);
 	QPushButton* addLoopToggleButton(QHBoxLayout*, obs_source_t*);
+	QPushButton* addRestartButton(QHBoxLayout*, obs_source_t*);
+	QPushButton* addPreviousButton(QHBoxLayout*, obs_source_t*);
+	QPushButton* addNextButton(QHBoxLayout*, obs_source_t*);
 };

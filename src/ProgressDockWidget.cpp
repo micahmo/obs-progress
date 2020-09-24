@@ -21,6 +21,11 @@ ProgressSlider* ProgressDockWidget::addProgress(obs_source_t* source) const
 	return layout->addProgressBar(source);
 }
 
+ProgressSlider* ProgressDockWidget::addSlideshow(obs_source_t* source) const
+{
+	return layout->addSlideshow(source);
+}
+
 void ProgressDockWidget::clearProgressBars() const
 {
 	for (QWidget* widget : container->findChildren<QWidget*>(QString{}, Qt::FindDirectChildrenOnly))

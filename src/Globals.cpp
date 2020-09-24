@@ -5,6 +5,9 @@ QIcon Globals::pauseIcon;
 QIcon Globals::playIcon;
 QIcon Globals::stopIcon;
 QIcon Globals::loopIcon;
+QIcon Globals::previousIcon;
+QIcon Globals::nextIcon;
+QIcon Globals::restartIcon;
 
 void Globals::initialize()
 {
@@ -35,4 +38,25 @@ void Globals::initialize()
 	loopImagePainter.fillRect(loopImage.rect(), Qt::lightGray);
 	loopImagePainter.end();
 	Globals::loopIcon = QIcon(loopImage);
+
+	QPixmap previousImage(":/qt-project.org/styles/commonstyle/images/media-seek-backward-16.png");
+	QPainter previousImagePainter(&previousImage);
+	previousImagePainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+	previousImagePainter.fillRect(previousImage.rect(), Qt::lightGray);
+	previousImagePainter.end();
+	Globals::previousIcon = QIcon(previousImage);
+
+	QPixmap nextImage(":/qt-project.org/styles/commonstyle/images/media-seek-forward-16.png");
+	QPainter nextImagePainter(&nextImage);
+	nextImagePainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+	nextImagePainter.fillRect(nextImage.rect(), Qt::lightGray);
+	nextImagePainter.end();
+	Globals::nextIcon = QIcon(nextImage);
+
+	QPixmap restartImage(":/qt-project.org/styles/commonstyle/images/media-skip-backward-16.png");
+	QPainter restartImagePainter(&restartImage);
+	restartImagePainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+	restartImagePainter.fillRect(restartImage.rect(), Qt::lightGray);
+	restartImagePainter.end();
+	Globals::restartIcon = QIcon(restartImage);
 }
