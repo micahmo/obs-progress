@@ -11,6 +11,7 @@
 #include <date/date.h>
 #include <QLabel>
 #include "Globals.h"
+#include "ProgressSlider.h"
 
 using namespace std::chrono;
 
@@ -25,7 +26,7 @@ void timerHit();
 void updateSceneInfo();
 
 QTimer* _timer;
-QMap<obs_source_t*, QProgressBar*> _sources;
+QMap<obs_source_t*, ProgressSlider*> _sources;
 
 QString progressBarTitleFormat = "'%1' Source   %2 / %3 / -%4";
 
@@ -40,7 +41,7 @@ bool obs_module_load(void)
 {
 	Globals::initialize();
 	
-	_sources = QMap<obs_source_t*, QProgressBar*>();
+	_sources = QMap<obs_source_t*, ProgressSlider*>();
 
 	QMainWindow* mainWindow = static_cast<QMainWindow*>(obs_frontend_get_main_window());
 	_progressDockWidget = new ProgressDockWidget(mainWindow);
@@ -86,7 +87,7 @@ void timerHit()
 	{
 		if (_sources.isEmpty() == false)
 		{
-			QMapIterator<obs_source_t*, QProgressBar*> i(_sources);
+			QMapIterator<obs_source_t*, ProgressSlider*> i(_sources);
 			while (i.hasNext())
 			{
 				i.next();
@@ -111,9 +112,12 @@ void timerHit()
 				QLabel* labelToUpdate = _progressDockWidget->layout->getLabel(i.value());
 				labelToUpdate->setText(progressBarText);
 
-				// Set the times on the 
-				i.value()->setRange(0, duration);
-				i.value()->setValue(time);
+				if (i.value()->canChange)
+				{
+					// Set the times on the progress bar
+					i.value()->setRange(0, duration);
+					i.value()->setValue(time);
+				}
 
 				// Get the state of the source and see if it's ended
 				obs_media_state state = obs_source_media_get_state(currentSceneItemSource);

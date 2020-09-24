@@ -2,10 +2,10 @@
 
 #include <obs.h>
 #include <QHboxLayout>
-#include <QProgressBar>
 #include <QLabel>
 #include <qmap.h>
 #include <QPushButton>
+#include "ProgressSlider.h"
 
 class ProgressContainerLayout : public QVBoxLayout
 {
@@ -14,14 +14,14 @@ class ProgressContainerLayout : public QVBoxLayout
 public:
 	explicit ProgressContainerLayout(QWidget* = 0);
 	~ProgressContainerLayout();
-	QProgressBar* addProgressBar(obs_source_t*);
-	std::vector<QWidget*> getWidget(QProgressBar*);
-	QLabel* getLabel(QProgressBar*);
-	QPushButton* getPlayPauseButton(QProgressBar*);
-	QPushButton* getLoopToggleButton(QProgressBar*);
+	ProgressSlider* addProgressBar(obs_source_t*);
+	std::vector<QWidget*> getWidget(ProgressSlider*);
+	QLabel* getLabel(ProgressSlider*);
+	QPushButton* getPlayPauseButton(ProgressSlider*);
+	QPushButton* getLoopToggleButton(ProgressSlider*);
 
 private:
-	QMap<QProgressBar*, std::vector<QWidget*>> widgets;
+	QMap<ProgressSlider*, std::vector<QWidget*>> widgets;
 	QPushButton* addPlayPauseButton(QHBoxLayout*, obs_source_t*);
 	QPushButton* addStopButton(QHBoxLayout*, obs_source_t*);
 	QPushButton* addLoopToggleButton(QHBoxLayout*, obs_source_t*);

@@ -4,6 +4,10 @@
 #include <QStatusBar>
 #include <qmap.h>
 #include "Globals.h"
+#include <QDebug>
+#include <QTimer>
+
+#include "ProgressSlider.h"
 
 ProgressContainerLayout::ProgressContainerLayout(QWidget* parent)
 	: QVBoxLayout(parent)
@@ -13,11 +17,85 @@ ProgressContainerLayout::ProgressContainerLayout(QWidget* parent)
 	setMargin(10);
 }
 
-QProgressBar* ProgressContainerLayout::addProgressBar(obs_source_t* source)
+ProgressSlider* ProgressContainerLayout::addProgressBar(obs_source_t* source)
 {
 	QHBoxLayout* mediaControlsLayout = new QHBoxLayout();
 	QStatusBar* statusBar = new QStatusBar();
-	QProgressBar* progressBar = new QProgressBar();
+
+	ProgressSlider* progressBar = new ProgressSlider();
+	progressBar->setOrientation(Qt::Horizontal);
+	progressBar->setStyleSheet("QSlider::groove:horizontal { height: 25 } QSlider::handle:horizontal { height: 25; width: 10 }");
+
+	progressBar->setTracking(false);
+	
+	QTimer* seekTimer = new QTimer(this);
+	connect(seekTimer, &QTimer::timeout, [=]()
+	{
+		if (progressBar->previousState == OBS_MEDIA_STATE_ENDED)
+		{
+			obs_source_media_restart(source);
+			obs_source_media_play_pause(source, true);
+			progressBar->previousState = OBS_MEDIA_STATE_PLAYING;
+		}
+		
+		if (progressBar->time != progressBar->lastTime)
+		{
+			obs_source_media_set_time(source, progressBar->time);
+			qDebug() << "Timer: Media time being set to " << progressBar->time;
+		}
+		progressBar->lastTime = progressBar->time;
+	});
+	
+	connect(progressBar, &QSlider::sliderPressed, [=]()
+	{
+		progressBar->canChange = false;
+		
+		progressBar->previousState = obs_source_media_get_state(source);
+
+		if (progressBar->previousState == OBS_MEDIA_STATE_PLAYING)
+		{
+			obs_source_media_play_pause(source, true);
+		}
+
+		progressBar->time = progressBar->value();
+		seekTimer->start(100);
+	});
+
+	connect(progressBar, &QSlider::sliderReleased, [=]()
+	{
+		if (seekTimer->isActive())
+		{
+			seekTimer->stop();
+			if (progressBar->time != progressBar->lastTime)
+			{
+				if (progressBar->previousState == OBS_MEDIA_STATE_ENDED)
+				{
+					obs_source_media_restart(source);
+				}
+				
+				obs_source_media_set_time(source, progressBar->time);
+				qDebug() << "Released: Media time being set to " << progressBar->time;
+			}
+			progressBar->time = progressBar->lastTime = -1;
+		}
+
+		if (progressBar->previousState != OBS_MEDIA_STATE_PAUSED)
+		{
+			obs_source_media_play_pause(source, false);
+		}
+
+		progressBar->canChange = true;
+	});
+	
+	connect(progressBar, &QSlider::sliderMoved, [=](int newSliderValue)
+	{
+		if (seekTimer->isActive())
+		{
+			progressBar->time = newSliderValue;
+			qDebug() << "Time variable is set to " << progressBar->time;
+		}
+	});
+	
 	statusBar->addPermanentWidget(progressBar, 1);
 	
 	QLabel* label = new QLabel();
@@ -124,7 +202,7 @@ QPushButton* ProgressContainerLayout::addLoopToggleButton(QHBoxLayout* layout, o
 	return loopToggleButton;
 }
 
-std::vector<QWidget*> ProgressContainerLayout::getWidget(QProgressBar* progressBar)
+std::vector<QWidget*> ProgressContainerLayout::getWidget(ProgressSlider* progressBar)
 {
 	if (widgets.contains(progressBar))
 	{
@@ -136,7 +214,7 @@ std::vector<QWidget*> ProgressContainerLayout::getWidget(QProgressBar* progressB
 	}
 }
 
-QLabel* ProgressContainerLayout::getLabel(QProgressBar* progressBar)
+QLabel* ProgressContainerLayout::getLabel(ProgressSlider* progressBar)
 {
 	if (widgets.contains(progressBar))
 	{
@@ -152,7 +230,7 @@ QLabel* ProgressContainerLayout::getLabel(QProgressBar* progressBar)
 	return new QLabel();
 }
 
-QPushButton* ProgressContainerLayout::getPlayPauseButton(QProgressBar* progressBar)
+QPushButton* ProgressContainerLayout::getPlayPauseButton(ProgressSlider* progressBar)
 {
 	if (widgets.contains(progressBar))
 	{
@@ -172,7 +250,7 @@ QPushButton* ProgressContainerLayout::getPlayPauseButton(QProgressBar* progressB
 	return new QPushButton();
 }
 
-QPushButton* ProgressContainerLayout::getLoopToggleButton(QProgressBar* progressBar)
+QPushButton* ProgressContainerLayout::getLoopToggleButton(ProgressSlider* progressBar)
 {
 	if (widgets.contains(progressBar))
 	{

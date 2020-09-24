@@ -16,7 +16,7 @@ ProgressDockWidget::ProgressDockWidget(QWidget* parent)
 	setWidget(container);
 }
 
-QProgressBar* ProgressDockWidget::addProgress(obs_source_t* source) const
+ProgressSlider* ProgressDockWidget::addProgress(obs_source_t* source) const
 {
 	return layout->addProgressBar(source);
 }
