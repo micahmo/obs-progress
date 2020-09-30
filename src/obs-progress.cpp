@@ -26,7 +26,7 @@ void timerHit();
 void updateSceneInfo();
 
 QTimer* _timer;
-QMap<obs_source_t*, QProgressBar*> _sources;
+QMap<obs_source_t*, ProgressSlider*> _sources;
 obs_source_t* _currentSceneSource;
 
 QString progressBarTitleFormat = "'%1' Source   %2 / %3 / -%4";
