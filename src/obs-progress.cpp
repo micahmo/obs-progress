@@ -72,7 +72,10 @@ void startTimer()
 
 void stopTimer()
 {
-	_timer->stop();
+	if (_timer->isActive())
+	{
+		_timer->stop();
+	}
 	_sources.clear();
 	obs_source_release(_currentSceneSource);
 }
