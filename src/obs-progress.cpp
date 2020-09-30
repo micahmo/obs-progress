@@ -159,7 +159,6 @@ void updateSceneInfo()
 		const char* name = obs_source_get_name(_currentSceneSource);
 
 		obs_scene_t* currentScene = obs_scene_from_source(_currentSceneSource);
-		obs_source_release(_currentSceneSource);
 
 		// Iterate through the sources in the current scene and add progress bars for each
 		auto sceneItemsCallback = [](obs_scene_t* currentScene, obs_sceneitem_t* currentSceneItem, void* param)
