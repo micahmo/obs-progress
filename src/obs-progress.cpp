@@ -77,7 +77,12 @@ void stopTimer()
 		_timer->stop();
 	}
 	_sources.clear();
-	obs_source_release(_currentSceneSource);
+
+	if (_currentSceneSource)
+	{
+		obs_source_release(_currentSceneSource);
+		_currentSceneSource = nullptr;
+	}
 }
 
 void timerHit()
