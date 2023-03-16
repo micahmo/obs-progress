@@ -8,3 +8,6 @@
 /installer/Output/
 .idea
 .vscode
+.vs
+CMakeFiles
+CMakeCache.txt

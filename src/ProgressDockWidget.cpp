@@ -21,7 +21,7 @@ ProgressSlider* ProgressDockWidget::addProgress(obs_source_t* source) const
 	return layout->addProgressBar(source);
 }
 
-ProgressSlider* ProgressDockWidget::addSlideshow(obs_source_t* source) const
+QWidget* ProgressDockWidget::addSlideshow(obs_source_t* source) const
 {
 	return layout->addSlideshow(source);
 }

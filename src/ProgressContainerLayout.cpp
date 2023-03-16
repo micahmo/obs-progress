@@ -14,7 +14,7 @@ ProgressContainerLayout::ProgressContainerLayout(QWidget* parent)
 {
 	addStretch();
 	addStretch();
-	setMargin(10);
+	setContentsMargins(10, 10, 10, 10);
 }
 
 ProgressSlider* ProgressContainerLayout::addProgressBar(obs_source_t* source)
@@ -113,16 +113,16 @@ ProgressSlider* ProgressContainerLayout::addProgressBar(obs_source_t* source)
 
 	QPushButton* loopToggleButton = addLoopToggleButton(mediaControlsLayout, source);
 
-	widgets[progressBar] = { label, playPauseButton, loopToggleButton };
+	videoWidgets[progressBar] = { label, playPauseButton, loopToggleButton };
 
 	return progressBar;
 }
 
-ProgressSlider* ProgressContainerLayout::addSlideshow(obs_source_t* source)
+QWidget* ProgressContainerLayout::addSlideshow(obs_source_t* source)
 {
 	const char* name = obs_source_get_name(source);
 	
-	QLabel* label = new QLabel("'" + QString(name) + "' Slideshow Source");
+	QLabel* label = new QLabel();
 	insertWidget(count() - 1, label); // Insert above the last stretch
 
 	QHBoxLayout* mediaControlsLayout = new QHBoxLayout();
@@ -135,8 +135,10 @@ ProgressSlider* ProgressContainerLayout::addSlideshow(obs_source_t* source)
 	mediaControlsLayout->setContentsMargins(0, 0, 0, 10);
 	mediaControls->setLayout(mediaControlsLayout);
 	insertWidget(count() - 1, mediaControls);
+
+	slideshowWidgets[mediaControls] = { label };
 	
-	return nullptr;
+	return mediaControls;
 }
 
 QPushButton* ProgressContainerLayout::addRestartButton(QHBoxLayout* layout, obs_source_t* source)
@@ -273,9 +275,9 @@ QPushButton* ProgressContainerLayout::addLoopToggleButton(QHBoxLayout* layout, o
 
 std::vector<QWidget*> ProgressContainerLayout::getWidget(ProgressSlider* progressBar)
 {
-	if (widgets.contains(progressBar))
+	if (videoWidgets.contains(progressBar))
 	{
-		return widgets[progressBar]; 
+		return videoWidgets[progressBar]; 
 	}
 	else
 	{
@@ -285,9 +287,25 @@ std::vector<QWidget*> ProgressContainerLayout::getWidget(ProgressSlider* progres
 
 QLabel* ProgressContainerLayout::getLabel(ProgressSlider* progressBar)
 {
-	if (widgets.contains(progressBar))
+	if (videoWidgets.contains(progressBar))
 	{
-		for (auto& widget : widgets[progressBar])
+		for (auto& widget : videoWidgets[progressBar])
+		{
+			if (typeid(*widget) == typeid(QLabel))
+			{
+				return dynamic_cast<QLabel*>(widget);
+			}
+		}
+	}
+
+	return new QLabel();
+}
+
+QLabel* ProgressContainerLayout::getLabel(QWidget* mediaControls)
+{
+	if (slideshowWidgets.contains(mediaControls))
+	{
+		for (auto& widget : slideshowWidgets[mediaControls])
 		{
 			if (typeid(*widget) == typeid(QLabel))
 			{
@@ -301,9 +319,9 @@ QLabel* ProgressContainerLayout::getLabel(ProgressSlider* progressBar)
 
 QPushButton* ProgressContainerLayout::getPlayPauseButton(ProgressSlider* progressBar)
 {
-	if (widgets.contains(progressBar))
+	if (videoWidgets.contains(progressBar))
 	{
-		for (auto& widget : widgets[progressBar])
+		for (auto& widget : videoWidgets[progressBar])
 		{
 			if (typeid(*widget) == typeid(QPushButton))
 			{
@@ -321,9 +339,9 @@ QPushButton* ProgressContainerLayout::getPlayPauseButton(ProgressSlider* progres
 
 QPushButton* ProgressContainerLayout::getLoopToggleButton(ProgressSlider* progressBar)
 {
-	if (widgets.contains(progressBar))
+	if (videoWidgets.contains(progressBar))
 	{
-		for (auto& widget : widgets[progressBar])
+		for (auto& widget : videoWidgets[progressBar])
 		{
 			if (typeid(*widget) == typeid(QPushButton))
 			{

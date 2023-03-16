@@ -26,22 +26,29 @@ void timerHit();
 void updateSceneInfo();
 
 QTimer* _timer;
-QMap<obs_source_t*, ProgressSlider*> _sources;
+QMap<obs_source_t*, ProgressSlider*> _videoSources;
+QMap<obs_source_t*, QWidget*> _slideshowSources;
 
 QString progressBarTitleFormat = "'%1' Source   %2 / %3 / -%4";
+QString slideshowFormat = "'%1' Slideshow Source   %2 / %3";
 
 typedef bool (*scene_items_callback)(obs_scene_t*, obs_sceneitem_t*, void*);
 
 void obs_module_unload(void)
 {
+	blog(LOG_INFO, "obs-progress: Unloading");
+
 	stopTimer();
 }
 
 bool obs_module_load(void)
 {
+	blog(LOG_INFO, "obs-progress: Loading");
+
 	Globals::initialize();
 	
-	_sources = QMap<obs_source_t*, ProgressSlider*>();
+	_videoSources = QMap<obs_source_t*, ProgressSlider*>();
+	_slideshowSources = QMap<obs_source_t*, QWidget*>();
 
 	QMainWindow* mainWindow = static_cast<QMainWindow*>(obs_frontend_get_main_window());
 	_progressDockWidget = new ProgressDockWidget(mainWindow);
@@ -55,8 +62,14 @@ bool obs_module_load(void)
 		if (event == OBS_FRONTEND_EVENT_SCENE_CHANGED) {
 			updateSceneInfo();
 		}
+		else if (event == OBS_FRONTEND_EVENT_SCENE_COLLECTION_CLEANUP) {
+			//blog(LOG_INFO, "obs-progress: Got scene collection cleanup event. Had %d source(s). Clearing.", _sources.count());
+			//_sources.clear();
+		}
 	};
 	obs_frontend_add_event_callback(eventCallback, static_cast<void*>(static_cast<obs_frontend_event_cb>(eventCallback)));
+
+	blog(LOG_INFO, "obs-progress: Successfully loaded");
 
 	return true;
 }
@@ -85,9 +98,9 @@ void timerHit()
 {
 	try
 	{
-		if (_sources.isEmpty() == false)
+		if (!_videoSources.isEmpty())
 		{
-			QMapIterator<obs_source_t*, ProgressSlider*> i(_sources);
+			QMapIterator<obs_source_t*, ProgressSlider*> i(_videoSources);
 			while (i.hasNext())
 			{
 				i.next();
@@ -121,7 +134,7 @@ void timerHit()
 
 				// Get the state of the source and see if it's ended
 				obs_media_state state = obs_source_media_get_state(currentSceneItemSource);
-				if (state == OBS_MEDIA_STATE_ENDED)
+				if (state == OBS_MEDIA_STATE_ENDED || state == OBS_MEDIA_STATE_PAUSED)
 				{
 					QPushButton* playPauseButton = _progressDockWidget->layout->getPlayPauseButton(i.value());
 					playPauseButton->setIcon(Globals::playIcon);
@@ -142,6 +155,41 @@ void timerHit()
 				loopToggleButton->setChecked(loop);
 			}
 		}
+
+		if (!_slideshowSources.isEmpty())
+		{
+			QMapIterator<obs_source_t*, QWidget*> i(_slideshowSources);
+			while (i.hasNext())
+			{
+				i.next();
+
+				auto* currentSceneItemSource = i.key();
+
+				// From: https://github.com/obsproject/obs-studio/blob/bff7928b5069beea674274d42afab33528924dfd/UI/media-controls.cpp#L509-L525
+				proc_handler_t* ph = obs_source_get_proc_handler(currentSceneItemSource);
+				calldata_t cd = {};
+
+				proc_handler_call(ph, "current_index", &cd);
+				int slide = calldata_int(&cd, "current_index");
+
+				proc_handler_call(ph, "total_files", &cd);
+				int total = calldata_int(&cd, "total_files");
+				calldata_free(&cd);
+
+				QString progressBarText;
+				if (total < 0)
+				{
+					progressBarText = slideshowFormat.arg(obs_source_get_name(currentSceneItemSource), "-", "-");
+				}
+				else
+				{
+					progressBarText = slideshowFormat.arg(obs_source_get_name(currentSceneItemSource), QString::number(slide + 1), QString::number(total));
+				}
+
+				QLabel* labelToUpdate = _progressDockWidget->layout->getLabel(i.value());
+				labelToUpdate->setText(progressBarText);
+			}
+		}
 	}
 	catch (...)
 	{
@@ -151,6 +199,8 @@ void timerHit()
 
 void updateSceneInfo()
 {
+	blog(LOG_INFO, "obs-progress: Got scene changed, rebuilding sources");
+
 	try
 	{
 		obs_source_t* currentSceneSource = obs_frontend_get_current_scene(); // This is the only call that increments the count, so we have to release it
@@ -165,23 +215,34 @@ void updateSceneInfo()
 			const char* id = obs_source_get_unversioned_id(currentSceneItemSource);
 			const bool isSlideshow = strcmp(id, "slideshow") == 0;
 
+			// These are handy signals to potentially use in the future if we want to get notified of source changes.
+			//signal_handler_t* handler = obs_source_get_signal_handler(currentSceneItemSource);
+			//signal_handler_connect(handler, "destroy", source_destroyed, 0);
+
+			//handler = obs_source_get_signal_handler(currentSceneItemSource);
+			//signal_handler_connect(handler, "deactivate", source_deactivated, 0);
+
 			if (obs_source_media_get_duration(currentSceneItemSource) > 0)
 			{
 				// Media source
-				_sources[currentSceneItemSource] = _progressDockWidget->addProgress(currentSceneItemSource);
+				_videoSources[currentSceneItemSource] = _progressDockWidget->addProgress(currentSceneItemSource);
 			}
 			else if (isSlideshow)
 			{
 				// Slideshow source
-				_progressDockWidget->addSlideshow(currentSceneItemSource);
+				_slideshowSources[currentSceneItemSource] = _progressDockWidget->addSlideshow(currentSceneItemSource);
 			}
 
 			return true;
 		};
 
-		_sources.clear();
+		_videoSources.clear();
+		_slideshowSources.clear();
 		_progressDockWidget->clearProgressBars();
 		obs_scene_enum_items(currentScene, sceneItemsCallback, static_cast<void*>(static_cast<scene_items_callback>(sceneItemsCallback)));
+
+		blog(LOG_INFO, "obs-progress: Tracking %d video source(s)", _videoSources.count());
+		blog(LOG_INFO, "obs-progress: Tracking %d slideshow source(s)", _slideshowSources.count());
 
 		_progressDockWidget->setWindowTitle("Progress of '" + QString(name) + "'");
 	}

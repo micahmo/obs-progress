@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(LibObs REQUIRED)
 find_package(date CONFIG REQUIRED)
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 
 set(obs-progress_SOURCES
@@ -37,16 +37,13 @@ add_library(obs-progress MODULE
 	)
 
 include_directories(
-	${LIBOBS_FRONTEND_DIR}
-	${Qt5Core_INCLUDES}
-	${Qt5Widgets_INCLUDES})
+	${OBS_LIBOBS_INCLUDE}
+	${OBS_FRONTEND_INCLUDE})
 
 target_link_libraries(obs-progress
-    libobs
-	Qt5::Core
-	Qt5::Widgets)
-
-#install_obs_plugin_with_data(obs-progress data)
+    ${OBS_LIB_DIR}
+	Qt6::Core
+	Qt6::Widgets)
 
 if(WIN32)
 	if(NOT DEFINED OBS_FRONTEND_LIB)
