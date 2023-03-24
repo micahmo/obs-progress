@@ -1,4 +1,5 @@
 #include <QStatusBar>
+#include <QScrollArea>
 #include "ProgressDockWidget.h"
 
 ProgressDockWidget::ProgressDockWidget(QWidget* parent) 
@@ -8,12 +9,16 @@ ProgressDockWidget::ProgressDockWidget(QWidget* parent)
 	setWindowTitle("Media Progress");
 	setFloating(false);
 
-	// I guess you can't "new" using the constructor syntax??
+	QScrollArea* scrollArea = new QScrollArea(this);
+
 	container = new QWidget();
+	scrollArea->setWidget(container);
+	scrollArea->setWidgetResizable(true);
+
 	layout = new ProgressContainerLayout();
 
 	container->setLayout(layout);
-	setWidget(container);
+	setWidget(scrollArea);
 }
 
 ProgressSlider* ProgressDockWidget::addProgress(obs_source_t* source) const

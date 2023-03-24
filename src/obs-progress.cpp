@@ -63,8 +63,9 @@ bool obs_module_load(void)
 			updateSceneInfo();
 		}
 		else if (event == OBS_FRONTEND_EVENT_SCENE_COLLECTION_CLEANUP) {
-			//blog(LOG_INFO, "obs-progress: Got scene collection cleanup event. Had %d source(s). Clearing.", _sources.count());
-			//_sources.clear();
+			blog(LOG_INFO, "obs-progress: Got scene collection cleanup event. Had %d video source(s), %d slideshow source(s). Clearing.", _videoSources.count(), _slideshowSources.count());
+			_videoSources.clear();
+			_slideshowSources.clear();
 		}
 	};
 	obs_frontend_add_event_callback(eventCallback, static_cast<void*>(static_cast<obs_frontend_event_cb>(eventCallback)));
